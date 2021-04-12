@@ -680,3 +680,17 @@ func TestCommandHandler(t *testing.T) {
 
 	assertStringArray(t, executedArgs, []string{"arg1", "arg2"})
 }
+
+func TestMapOfSlices(t *testing.T) {
+	var opts = struct {
+		M map[string][]string `short:"m"`
+	}{}
+
+	parser := NewParser(&opts, Default&^PrintErrors)
+	_, err := parser.ParseArgs([]string{"cmd", "-m", "a:b", "-m", "a:c", "-m", "d:e"})
+	if err != nil {
+		t.Fatalf("Unexpected parse error: %s", err)
+	}
+	assertStringArray(t, opts.M["a"], []string{"b", "c"})
+	assertStringArray(t, opts.M["d"], []string{"e"})
+}
