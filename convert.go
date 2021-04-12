@@ -294,7 +294,15 @@ func convert(val string, retval reflect.Value, options multiTag) error {
 			retval.Set(reflect.MakeMap(tp))
 		}
 
-		retval.SetMapIndex(reflect.Indirect(keyval), reflect.Indirect(valueval))
+		k := reflect.Indirect(keyval)
+		v := reflect.Indirect(valueval)
+		// Append if our values are slices (similarly to how we append to a slice on its own)
+		if valuetp.Kind() == reflect.Slice {
+			if existing := retval.MapIndex(k); existing.IsValid() {
+				v = reflect.AppendSlice(existing, v)
+			}
+		}
+		retval.SetMapIndex(k, v)
 	case reflect.Ptr:
 		if retval.IsNil() {
 			retval.Set(reflect.New(retval.Type().Elem()))
