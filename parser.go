@@ -5,7 +5,6 @@
 package flags
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"io"
