@@ -1,3 +1,4 @@
+//go:build windows
 // +build windows
 
 package flags
@@ -65,7 +66,7 @@ func GetConsoleScreenBufferInfo(handle uintptr) (*CONSOLE_SCREEN_BUFFER_INFO, er
 }
 
 func getTerminalColumns() int {
-	defaultWidth := 80
+	defaultWidth := 0
 
 	stdoutHandle, err := getStdHandle(syscall.STD_OUTPUT_HANDLE)
 	if err != nil {

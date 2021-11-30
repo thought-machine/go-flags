@@ -60,6 +60,10 @@ type Parser struct {
 	// of an unknown flag or a help flag to print additional information
 	PrintAdditionalUsageInfo func(wr io.Writer)
 
+	// DefaultColumns is the default number of columns we wrap messages at if the
+	// terminal size cannot be programmatically determined.
+	DefaultColumns int
+
 	internalError error
 }
 
