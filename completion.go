@@ -141,7 +141,7 @@ func (c *completion) completeCommands(s *parseState, match string) []Completion 
 	return n
 }
 
-func (c *completion) completeValue(value reflect.Value, prefix string, match string) []Completion {
+func (c *completion) completeValue(value reflect.Value, field *reflect.StructField, prefix string, match string) []Completion {
 	if value.Kind() == reflect.Slice {
 		value = reflect.New(value.Type().Elem())
 	}
@@ -154,6 +154,13 @@ func (c *completion) completeValue(value reflect.Value, prefix string, match str
 	} else if value.CanAddr() {
 		if cmp, ok = value.Addr().Interface().(Completer); ok {
 			ret = cmp.Complete(match)
+		} else if field != nil {
+			mt := newMultiTag(string(field.Tag))
+			for _, choice := range mt.GetMany("choice") {
+				if strings.HasPrefix(choice, match) {
+					ret = append(ret, Completion{Item: choice})
+				}
+			}
 		}
 	}
 
@@ -246,7 +253,7 @@ func (c *completion) complete(args []string) []Completion {
 
 	if opt != nil {
 		// Completion for the argument of 'opt'
-		ret = c.completeValue(opt.value, "", lastarg)
+		ret = c.completeValue(opt.value, &opt.field, "", lastarg)
 	} else if argumentStartsOption(lastarg) {
 		// Complete the option
 		prefix, optname, islong := stripOptionPrefix(lastarg)
@@ -257,7 +264,7 @@ func (c *completion) complete(args []string) []Completion {
 			sname := string(rname)
 
 			if opt := s.lookup.shortNames[sname]; opt != nil && opt.canArgument() {
-				ret = c.completeValue(opt.value, prefix+sname, optname[n:])
+				ret = c.completeValue(opt.value, &opt.field, prefix+sname, optname[n:])
 			} else {
 				ret = c.completeNamesForShortPrefix(s, prefix, optname)
 			}
@@ -269,7 +276,7 @@ func (c *completion) complete(args []string) []Completion {
 			}
 
 			if opt != nil {
-				ret = c.completeValue(opt.value, prefix+optname+split, *argument)
+				ret = c.completeValue(opt.value, &opt.field, prefix+optname+split, *argument)
 			}
 		} else if islong {
 			ret = c.completeNamesForLongPrefix(s, prefix, optname)
@@ -278,7 +285,7 @@ func (c *completion) complete(args []string) []Completion {
 		}
 	} else if len(s.positional) > 0 {
 		// Complete for positional argument
-		ret = c.completeValue(s.positional[0].value, "", lastarg)
+		ret = c.completeValue(s.positional[0].value, nil, "", lastarg)
 	} else if len(s.command.commands) > 0 {
 		// Complete for command
 		ret = c.completeCommands(s, lastarg)
