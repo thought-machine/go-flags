@@ -47,7 +47,13 @@ var completionTestOptions struct {
 		Positional struct {
 			Filename Filename
 		} `positional-args:"yes"`
-	} `command:"add" description:"add an item"`
+		Multi struct {
+			Parallel   bool `long:"parallel" description:"parallelise"`
+			Positional struct {
+				Filename []Filename
+			} `positional-args:"yes"`
+		} `command:"multi"`
+	} `command:"add" subcommands-optional:"true" description:"add an item"`
 
 	AddMultiCommand struct {
 		Positional struct {
@@ -261,6 +267,12 @@ func init() {
 			// Multiple flag filename
 			[]string{"add-multi-flag", "-f", filepath.Join(completionTestSourcedir, "completion")},
 			completionTestFilename,
+			false,
+		},
+		{
+			// Completion for subcommands
+			[]string{"add", "multi", "--pa"},
+			[]string{"--parallel"},
 			false,
 		},
 	}
