@@ -271,6 +271,12 @@ func init() {
 		},
 		{
 			// Completion for subcommands
+			[]string{"add", "mul"},
+			[]string{"multi"},
+			false,
+		},
+		{
+			// Completion for subcommand flags
 			[]string{"add", "multi", "--pa"},
 			[]string{"--parallel"},
 			false,
