@@ -276,12 +276,16 @@ func (c *completion) complete(args []string) []Completion {
 		} else {
 			ret = c.completeNamesForShortPrefix(s, prefix, optname)
 		}
-	} else if len(s.positional) > 0 {
-		// Complete for positional argument
-		ret = c.completeValue(s.positional[0].value, "", lastarg)
 	} else if len(s.command.commands) > 0 {
 		// Complete for command
 		ret = c.completeCommands(s, lastarg)
+		if len(ret) == 0 && len(s.positional) > 0 {
+			// Complete for positional arguments if available
+			ret = c.completeValue(s.positional[0].value, "", lastarg)
+		}
+	} else if len(s.positional) > 0 {
+		// Complete for positional argument
+		ret = c.completeValue(s.positional[0].value, "", lastarg)
 	}
 
 	sort.Sort(completions(ret))
