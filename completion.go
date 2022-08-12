@@ -227,14 +227,14 @@ func (c *completion) complete(args []string) []Completion {
 				}
 			}
 		} else {
-			if len(s.positional) > 0 {
+			if cmd, ok := s.lookup.commands[arg]; ok {
+				cmd.fillParseState(s)
+			} else if len(s.positional) > 0 {
 				if !s.positional[0].isRemaining() {
 					// Don't advance beyond a remaining positional arg (because
 					// it consumes all subsequent args).
 					s.positional = s.positional[1:]
 				}
-			} else if cmd, ok := s.lookup.commands[arg]; ok {
-				cmd.fillParseState(s)
 			}
 
 			opt = nil
