@@ -36,12 +36,13 @@ func (t *TestComplete) Complete(match string) []Completion {
 }
 
 var completionTestOptions struct {
-	Verbose  bool `short:"v" long:"verbose" description:"Verbose messages"`
-	Debug    bool `short:"d" long:"debug" description:"Enable debug"`
-	Info     bool `short:"i" description:"Display info"`
-	Version  bool `long:"version" description:"Show version"`
-	Required bool `long:"required" required:"true" description:"This is required"`
-	Hidden   bool `long:"hidden" hidden:"true" description:"This is hidden"`
+	Verbose  bool   `short:"v" long:"verbose" description:"Verbose messages"`
+	Debug    bool   `short:"d" long:"debug" description:"Enable debug"`
+	Info     bool   `short:"i" description:"Display info"`
+	Version  bool   `long:"version" description:"Show version"`
+	Required bool   `long:"required" required:"true" description:"This is required"`
+	Hidden   bool   `long:"hidden" hidden:"true" description:"This is hidden"`
+	Choice   string `long:"choice" choice:"cassandra" choice:"spook" description:"This has choices"`
 
 	AddCommand struct {
 		Positional struct {
@@ -105,7 +106,7 @@ func init() {
 		{
 			"Short names",
 			[]string{"-"},
-			[]string{"--debug", "--required", "--verbose", "--version", "-i"},
+			[]string{"--choice", "--debug", "--required", "--verbose", "--version", "-i"},
 			false,
 		},
 
@@ -126,7 +127,7 @@ func init() {
 		{
 			"Long names",
 			[]string{"--"},
-			[]string{"--debug", "--required", "--verbose", "--version"},
+			[]string{"--choice", "--debug", "--required", "--verbose", "--version"},
 			false,
 		},
 
@@ -134,6 +135,7 @@ func init() {
 			"Long names with descriptions",
 			[]string{"--"},
 			[]string{
+				"--choice    # This has choices",
 				"--debug     # Enable debug",
 				"--required  # This is required",
 				"--verbose   # Verbose messages",
@@ -280,6 +282,12 @@ func init() {
 			"Completion for subcommand flags",
 			[]string{"add", "multi", "--pa"},
 			[]string{"--parallel"},
+			false,
+		},
+		{
+			"Choices",
+			[]string{"--choice", "ca"},
+			[]string{"cassandra"},
 			false,
 		},
 	}
