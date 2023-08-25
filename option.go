@@ -329,6 +329,7 @@ func (option *Option) clearDefault() error {
 		for _, d := range usedDefault {
 			err := option.set(&d)
 			if err != nil {
+				option.preventDefault = false
 				return err
 			}
 			option.isSetDefault = true
