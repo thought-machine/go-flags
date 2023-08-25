@@ -381,6 +381,35 @@ func TestEnvDefaults(t *testing.T) {
 	}
 }
 
+func TestReturnsErrorForInvalidEnvVarsOnAllParseAttempts(t *testing.T) {
+	oldEnv := EnvSnapshot()
+	defer oldEnv.Restore()
+
+	var opts envDefaultOptions
+	os.Setenv("TEST_T", "invalid")
+
+	parser := NewParser(&opts, None)
+
+	// Call ParseArgs and verify that the error is returned
+	_, err := parser.ParseArgs(nil)
+	if err == nil {
+		t.Fatal("parser did not return error for invalid env var on first call")
+	}
+	if !strings.Contains(err.Error(), "invalid argument for flag `--t'") {
+		t.Fatalf("unexpected error: %s", err.Error())
+	}
+
+	// Call ParseArgs again and verify that the error is still returned
+	_, err = parser.ParseArgs(nil)
+	if err == nil {
+		t.Fatal("parser did not return error for invalid env var on second call")
+	}
+	if !strings.Contains(err.Error(), "invalid argument for flag `--t'") {
+		t.Fatalf("unexpected error: %s", err.Error())
+	}
+
+}
+
 type CustomFlag struct {
 	Value string
 }
