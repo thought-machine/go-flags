@@ -208,9 +208,11 @@ func (c *Command) scanSubcommandHandler(parentg *Group) scanHandler {
 				arg := &Arg{
 					Name:            name,
 					Description:     m.Get("description"),
+					Choices:         m.GetMany("choice"),
 					Required:        required,
 					RequiredMaximum: requiredMaximum,
 
+					field: field,
 					value: realval.Field(i),
 					tag:   m,
 				}

@@ -108,8 +108,8 @@ The following is a list of tags for struct fields supported by go-flags:
                     slices and maps (optional)
     value-name:     the name of the argument value (to be shown in the help)
                     (optional)
-    choice:         limits the values for an option to a set of values.
-                    Repeat this tag once for each allowable value.
+    choice:         limits the values for an option or positional argument to a
+                    set of values. Repeat this tag once for each allowable value.
                     e.g. `long:"animal" choice:"cat" choice:"dog"`
     hidden:         if non-empty, the option is not visible in the help or man page.
 

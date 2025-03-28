@@ -76,6 +76,17 @@ var completionTestOptions struct {
 		Completed TestComplete `short:"c" long:"completed"`
 	} `command:"rename" description:"rename an item"`
 
+	ChoiceCommand struct {
+		Positional struct {
+			Choice string `choice:"pos-choice-1" choice:"pos-choice-2"`
+		} `positional-args:"yes"`
+		Subcommand struct {
+			Positional struct {
+				Choice string `choice:"pos-choice-sub-1" choice:"pos-choice-sub-2"`
+			} `positional-args:"yes"`
+		} `command:"sub"`
+	} `command:"choice" hidden:"true"`
+
 	HiddenCommand struct {
 	} `command:"hidden" description:"hidden command" hidden:"true"`
 }
@@ -205,6 +216,19 @@ func init() {
 		},
 
 		{
+			"Subcommand and positional with choice",
+			[]string{"choice", ""},
+			[]string{"pos-choice-1", "pos-choice-2", "sub"},
+			false,
+		},
+		{
+			"Positional with choice",
+			[]string{"choice", "sub", ""},
+			[]string{"pos-choice-sub-1", "pos-choice-sub-2"},
+			false,
+		},
+
+		{
 			"Flag filename",
 			[]string{"rm", "-f", path.Join(completionTestSourcedir, "completion")},
 			completionTestFilename,
@@ -275,7 +299,7 @@ func init() {
 		{
 			"Completion for subcommands",
 			[]string{"add", "mul"},
-			[]string{"multi"},
+			[]string{"multi", "multitag.go"},
 			false,
 		},
 		{

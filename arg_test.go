@@ -162,6 +162,72 @@ func TestPositionalRequiredRestRangeEmptyFail(t *testing.T) {
 	assertError(t, err, ErrRequired, "the required argument `Rest (zero arguments)` was not provided")
 }
 
+func TestPositionalChoiceRequiredPass(t *testing.T) {
+	var opts = struct {
+		Positional struct {
+			Command  int
+			Filename string `choice:"file1" choice:"file2"`
+		} `positional-args:"yes" required:"yes"`
+	}{}
+
+	p := NewParser(&opts, None)
+	_, err := p.ParseArgs([]string{"10", "file2"})
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+		return
+	}
+
+	assertString(t, opts.Positional.Filename, "file2")
+}
+
+func TestPositionalChoiceRequiredFail(t *testing.T) {
+	var opts = struct {
+		Positional struct {
+			Command  int
+			Filename string `choice:"file1" choice:"file2"`
+		} `positional-args:"yes" required:"yes"`
+	}{}
+
+	p := NewParser(&opts, None)
+	_, err := p.ParseArgs([]string{"10", "file3"})
+
+	assertError(t, err, ErrInvalidChoice, "Invalid value `file3' for argument `Filename'. Allowed values are: file1 or file2")
+}
+
+func TestPositionalChoiceOptionalPass(t *testing.T) {
+	var opts = struct {
+		Positional struct {
+			Command  int
+			Filename string `choice:"file1" choice:"file2"`
+		} `positional-args:"yes"`
+	}{}
+
+	p := NewParser(&opts, None)
+	_, err := p.ParseArgs([]string{"10", "file2"})
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+		return
+	}
+
+	assertString(t, opts.Positional.Filename, "file2")
+}
+
+func TestPositionalChoiceOptionalFail(t *testing.T) {
+	var opts = struct {
+		Positional struct {
+			Command  int
+			Filename string `choice:"file1" choice:"file2"`
+		} `positional-args:"yes"`
+	}{}
+
+	p := NewParser(&opts, None)
+	_, err := p.ParseArgs([]string{"10", "file3"})
+
+	assertError(t, err, ErrInvalidChoice, "Invalid value `file3' for argument `Filename'. Allowed values are: file1 or file2")
+}
+
 func TestPositionalWithSubcommand(t *testing.T) {
 	var opts = struct {
 		Command struct {

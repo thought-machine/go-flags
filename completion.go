@@ -286,13 +286,21 @@ func (c *completion) complete(args []string) []Completion {
 	} else if len(s.command.commands) > 0 {
 		// Complete for command
 		ret = c.completeCommands(s, lastarg)
-		if len(ret) == 0 && len(s.positional) > 0 {
+		if len(s.positional) > 0 {
 			// Complete for positional arguments if available
-			ret = c.completeValue(s.positional[0].value, nil, "", lastarg)
+			if len(s.positional[0].Choices) != 0 {
+				ret = append(ret, c.completeValue(s.positional[0].value, &s.positional[0].field, "", lastarg)...)
+			} else {
+				ret = append(ret, c.completeValue(s.positional[0].value, nil, "", lastarg)...)
+			}
 		}
 	} else if len(s.positional) > 0 {
 		// Complete for positional argument
-		ret = c.completeValue(s.positional[0].value, nil, "", lastarg)
+		if len(s.positional[0].Choices) != 0 {
+			ret = c.completeValue(s.positional[0].value, &s.positional[0].field, "", lastarg)
+		} else {
+			ret = c.completeValue(s.positional[0].value, nil, "", lastarg)
+		}
 	}
 
 	sort.Sort(completions(ret))

@@ -651,6 +651,30 @@ func (p *parseState) addArgs(args ...string) error {
 	for len(p.positional) > 0 && len(args) > 0 {
 		arg := p.positional[0]
 
+		if !arg.isRemaining() && len(arg.Choices) != 0 {
+			found := false
+
+			for _, choice := range arg.Choices {
+				if choice == args[0] {
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				allowed := strings.Join(arg.Choices[0:len(arg.Choices)-1], ", ")
+
+				if len(arg.Choices) > 1 {
+					allowed += " or " + arg.Choices[len(arg.Choices)-1]
+				}
+
+				p.err = newErrorf(ErrInvalidChoice,
+					"Invalid value `%s' for argument `%s'. Allowed values are: %s",
+					args[0], arg.Name, allowed)
+				return p.err
+			}
+		}
+
 		if err := convert(args[0], arg.value, arg.tag); err != nil {
 			p.err = err
 			return err
